@@ -2,7 +2,9 @@ import isEmpty from 'lodash/isEmpty';
 import getRoleDescription from './getRuleDescription';
 import RocketChat from '../../../lib/rocketchat';
 
-const loadUser = async(room, roomUser) => {
+const loadUser = async(state, setState) => {
+	const { room, roomUser } = state;
+
 	if (isEmpty(roomUser)) {
 		try {
 			const roomUserId = RocketChat.getUidDirectMessage(room);
@@ -17,13 +19,14 @@ const loadUser = async(room, roomUser) => {
 					}));
 				}
 
-				return user;
+				setState({ roomUser: user });
 			}
 		} catch {
 			// do nothing
 		}
 	}
 };
+
 
 export default loadUser;
 

@@ -1,11 +1,21 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import I18n from '../../i18n';
 import Item from './Item';
+import loadRoom from './Services/loadRoom';
 
-const Channel = ({ room, theme }) => {
+const Channel = ({
+	room, state, props, setState, theme
+}) => {
 	const { description, topic, announcement } = room;
+
+	useEffect(() => {
+		const subscription = loadRoom(state, props, setState);
+
+		return subscription;
+	}, []);
 	return (
 		<>
 			<Item

@@ -4,7 +4,10 @@ import * as HeaderButton from '../../../containers/HeaderButton';
 import { logEvent, events } from '../../../utils/log';
 import I18n from '../../../i18n';
 
-const Header = (roomUser, room, showEdit, navigation, route) => {
+const Header = (state, props) => {
+  const { roomUser, room, showEdit } = state;
+	const { navigation, route } = props;
+
 	const t = route.params?.t;
 	const rid = route.params?.rid;
 	const showCloseModal = route.params?.showCloseModal;

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
@@ -10,6 +11,8 @@ import Timezone from './Timezone';
 import sharedStyles from '../Styles';
 import { themes } from '../../constants/colors';
 import I18n from '../../i18n';
+import loadRoom from './Services/loadRoom';
+import loadVisitor from './Services/loadVisitor';
 
 const styles = StyleSheet.create({
 	title: {
@@ -25,7 +28,9 @@ Title.propTypes = {
 	theme: PropTypes.string
 };
 
-const Livechat = ({ room, roomUser, theme }) => {
+const Livechat = ({
+	room, roomUser, state, props, setState, theme
+}) => {
 	const [department, setDepartment] = useState({});
 
 
@@ -45,6 +50,20 @@ const Livechat = ({ room, roomUser, theme }) => {
 	};
 
 	useEffect(() => { getRoom(); }, [room]);
+
+	useEffect(() => {
+		const subscription = loadRoom(state, props, setState);
+
+		return subscription;
+	}, []);
+
+	useEffect(() => {
+		const unsubscribeFocus = props.navigation.addListener('focus', () => {
+			loadVisitor(state, props, setState);
+		});
+
+		return unsubscribeFocus;
+	}, []);
 
 	return (
 		<>

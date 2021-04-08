@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react/prop-types */
+import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -7,7 +8,7 @@ import I18n from '../../i18n';
 
 import Timezone from './Timezone';
 import CustomFields from './CustomFields';
-
+import loadUser from './Services/loadUser';
 import styles from './styles';
 
 const Roles = ({ roles, theme }) => (roles && roles.length ? (
@@ -27,13 +28,21 @@ Roles.propTypes = {
 	theme: PropTypes.string
 };
 
-const Direct = ({ roomUser, theme }) => (
-	<>
-		<Roles roles={roomUser.parsedRoles} theme={theme} />
-		<Timezone utcOffset={roomUser.utcOffset} theme={theme} />
-		<CustomFields customFields={roomUser.customFields} theme={theme} />
-	</>
-);
+const Direct = ({
+	roomUser, state, setState, theme
+}) => {
+	useEffect(() => {
+		loadUser(state, setState);
+	}, []);
+
+	return (
+		<>
+			<Roles roles={roomUser.parsedRoles} theme={theme} />
+			<Timezone utcOffset={roomUser.utcOffset} theme={theme} />
+			<CustomFields customFields={roomUser.customFields} theme={theme} />
+		</>
+	);
+};
 Direct.propTypes = {
 	roomUser: PropTypes.object,
 	theme: PropTypes.string

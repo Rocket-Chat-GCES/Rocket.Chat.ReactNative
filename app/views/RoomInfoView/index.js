@@ -16,11 +16,9 @@ import getRoomTitle from './Components/roomTitle';
 import setHeader from './Components/header';
 import renderContent from './Components/content';
 import renderButtons from './Components/Buttons';
-import loadUser from './Services/loadUser';
 import goRoom from './Services/goRoom';
 import Avatar from './Components/avatar';
 import createDirect from './Services/createDirect';
-import loadVisitor from './Services/loadVisitor';
 
 class RoomInfoView extends React.Component {
 	constructor(props) {
@@ -36,41 +34,8 @@ class RoomInfoView extends React.Component {
 		};
 	}
 
-	async componentDidMount() {
-		const { roomUser, room, showEdit } = this.state;
-		const { navigation, route, editRoomPermission } = this.props;
-		if (this.isDirect) {
-			this.setState({ roomUser: await loadUser(room, roomUser) });
-		} else {
-			this.subscription = this.loadRoom(route, editRoomPermission, navigation, roomUser, room, showEdit, this.setState, this.rid);
-		}
-
-		setHeader(roomUser, room, showEdit, navigation, route);
-
-		this.unsubscribeFocus = navigation.addListener('focus', () => {
-			if (this.isLivechat) {
-				loadVisitor(this.state, this.props, this.setState);
-			}
-		});
-	}
-
-	componentWillUnmount() {
-		if (this.subscription && this.subscription.unsubscribe) {
-			this.subscription.unsubscribe();
-		}
-		if (this.unsubscribeFocus) {
-			this.unsubscribeFocus();
-		}
-	}
-
-	get isDirect() {
-		const { room } = this.state;
-		return room.t === 'd';
-	}
-
-	get isLivechat() {
-		const { room } = this.state;
-		return room.t === 'l';
+	componentDidMount() {
+		setHeader(this.state, this.props, this.setState);
 	}
 
 	render() {
@@ -86,9 +51,9 @@ class RoomInfoView extends React.Component {
 					<View style={[styles.avatarContainer, { backgroundColor: themes[theme].auxiliaryBackground }]}>
 						<Avatar room={room} roomUser={roomUser} roomType={this.t} />
 						<View style={styles.roomTitleContainer}>{ getRoomTitle(room, this.t, roomUser?.name, roomUser?.username, roomUser?.statusText, theme) }</View>
-						{renderButtons(this.isDirect, () => createDirect(this.setState, this.props), jitsiEnabled, () => RocketChat.callJitsi(room), () => goRoom(this.state, this.props))}
+						{renderButtons(room.t === 'd', () => createDirect(this.setState, this.props), jitsiEnabled, () => RocketChat.callJitsi(room), () => goRoom(this.state, this.props))}
 					</View>
-					{renderContent(room, roomUser, theme)}
+					{renderContent(room, roomUser, this.state, this.props, this.setState, theme)}
 				</SafeAreaView>
 			</ScrollView>
 		);
